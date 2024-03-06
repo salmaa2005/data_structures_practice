@@ -82,9 +82,12 @@ void push(stack *stk, d_type element)
 d_type pop(stack *stk)
 {
 	if (is_empty(*stk))
+	{
 		printf("ERROR: Stack underflow\n");
-	return (-1);
-	else return (stk->elements[stk->top--]);
+		return (-1);
+	}
+
+	return (stk->elements[stk->top--]);
 	// hena 3amalna -- ba3d el top 3a4an n3rf nraga3 el element el a5eer
 	// w ba3den nn2s el top
 }
