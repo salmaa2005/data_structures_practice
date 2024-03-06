@@ -7,6 +7,7 @@ int main(void)
 	create_stack(&s);
 	if (is_empty(s))
 		printf("Stack is empty\n");
+	pop(&s);
 	push(&s, 1);
 	if (!is_empty(s))
 		printf("Stack is not empty\n");
@@ -26,6 +27,7 @@ int main(void)
 
 	if (is_full(s))
 		printf("Stack is full\n");
+	push(&s, 11);
 
 	printf("Top element: %d\n", peek(s));
 	for (int i = 0; i < STACK_SIZE; i++)
