@@ -32,4 +32,7 @@ int main(void)
 	{
 		printf("Element %d: %d\n", i + 1, pop(&s));
 	}
+
+	if (is_empty(s))
+		printf("finally the Stack is empty :3 \n");
 }
