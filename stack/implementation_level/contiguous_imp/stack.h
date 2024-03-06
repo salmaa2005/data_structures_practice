@@ -46,4 +46,4 @@ void push(stack *stk, d_type element);
 d_type peek(stack stk);
 // returns the element at the top of the stack without deleting it
 
-#endif STACK_H
+#endif
