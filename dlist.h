@@ -4,13 +4,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#define BUFFER_SIZE 1024
+
 typedef char doubleLinkedEntry;
 
 // struct created
 typedef struct
 {
 	int Key;
-	doubleLinkedEntry entry[100]; // specified size edited
+	doubleLinkedEntry entry[1024]; // specified size edited
 } Info;
 
 typedef struct node
@@ -36,6 +39,16 @@ void traverse(DList *pdl, void (*pf)(Info)); // argument of the function changed
 
 // Additional functions
 void printNodeInfo(Info info);
-void displayDlist(DList *pdl);
+void printNodeEntry(Info info);
+
+// Project-related functions (all of them return 0 if file didn't open,-1 if any
+// other error, 1 if successful)
+int addLineToDList(DList *pdl, char *line);
+int readFile(DList *pdl, char *fileName);	 // R
+int writeToFile(DList *pdl, char *fileName); // W
+int ShowAllLines(char *fileName);			 // S
+int ShowLineLength(char *fileName,
+				   int lineNum); // returns the length of the line
+// calculates and returns the length of a line
 
 #endif

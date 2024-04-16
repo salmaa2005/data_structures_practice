@@ -3,6 +3,8 @@
 void createDList(DList *pdl)
 {
 	pdl->head = NULL;
+	pdl->tail = NULL;
+	pdl->size = 0;
 }
 
 int DListFull(DList *pdl)
@@ -125,14 +127,125 @@ void traverse(DList *pdl, void (*pf)(Info))
 	}
 }
 
-// Additional functions:
+/* Additional functions: */
 void printNodeInfo(Info info)
 {
 	printf("Key: %d\n", info.Key);
 	printf("Entry: %s\n", info.entry);
 }
 
-void displayDlist(DList *pdl)
+void printNodeEntry(Info info)
 {
-	traverse(pdl, printNodeInfo);
+	printf("Entry: %s\n", info.entry);
+}
+
+/* Project-related functions: */
+
+// returns 0 if allocation failed
+// returns 1 if successful
+// adds a line to the end of the list
+int addLineToDList(DList *pdl, char *line)
+{
+	Node *pn = (Node *)malloc(sizeof(Node));
+	if (!pn)
+		return 0;
+	if (!pdl->head)
+	{
+		pdl->head = pn;
+		pdl->tail = pn;
+		pn->next = NULL;
+		pn->prev = NULL;
+		pn->info.Key = 1;
+	}
+	else
+	{
+		pn->prev = pdl->tail;
+		pn->next = NULL;
+		pdl->tail->next = pn;
+		pdl->tail = pn;
+		pn->info.Key = pdl->tail->info.Key + 1;
+	}
+	pdl->size++;
+	return 1;
+}
+
+// returns 0 if file could not be opened
+// returns 1 if file was successfully read
+int readFile(DList *pdl, char *fileName)
+{
+	FILE *fp = fopen(fileName, "r");
+	if (!fp)
+		return 0;
+	char buffer[BUFFER_SIZE];
+	while (fgets(buffer, sizeof(buffer), fp))
+	{
+		for (int i = 0; i < strlen(buffer); i++)
+		{
+			if (buffer[i] == '\n')
+			{
+				buffer[i] = '\0';
+				break;
+			}
+		}
+		addLineToDList(pdl, buffer);
+	}
+	fclose(fp);
+	return 1;
+}
+// returns 0 if file could not be opened
+// returns 1 if file was successfully written
+int writeToFile(DList *pdl, char *fileName)
+{
+	FILE *fp = fopen(fileName, "w");
+	if (!fp)
+		return 0;
+	Node *trav = pdl->head;
+	while (trav)
+	{
+		fprintf(fp, "%s\n", trav->info.entry); // writes the entry to the file
+		trav = trav->next;
+	}
+	fclose(fp);
+	return 1;
+}
+
+// returns 0 if file could not be opened
+// returns 1 if file was successfully displayed
+int ShowAllLines(char *fileName)
+{
+	int LineNum = 1;
+	FILE *fp = fopen(fileName, "r");
+	if (!fp)
+		return 0;
+	char buffer[BUFFER_SIZE];
+	while (fgets(buffer, sizeof(buffer), fp))
+	{
+		printf("%d. %s", LineNum, buffer);
+		LineNum++;
+	}
+	fclose(fp);
+	return 1;
+}
+
+// returns -1 if line not found
+// returns 0 if file could not be opened
+// returns the length of the line if found
+int ShowLineLength(char *fileName, int lineNum)
+{
+	FILE *fp = fopen(fileName, "r");
+	if (!fp)
+		return 0;
+	char buffer[BUFFER_SIZE];
+	int LineNumber = 1;
+	while (fgets(buffer, sizeof(buffer), fp))
+	{
+		if (LineNumber == lineNum)
+		{
+			fclose(fp);
+			return strlen(buffer) - 1; // because the last character is \n
+		}
+		LineNumber++;
+	}
+	fclose(fp);
+	return -1;
 }
