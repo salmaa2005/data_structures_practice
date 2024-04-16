@@ -28,7 +28,7 @@ typedef struct
 void createDList(DList *);
 int DListFull(DList *);
 int DListEmpty(DList *);
-void insert(DList *pdl, int pos, doubleLinkedEntry e[]);
+int insert(DList *pdl, Info info); // return and argument types edited
 int deleteFromDList(DList *pdl, int pos,
 					doubleLinkedEntry e[]);			 // return type edited
 int deleteFirst(DList *pdl, doubleLinkedEntry pe[]); // return type edited
@@ -36,5 +36,6 @@ void traverse(DList *pdl, void (*pf)(Info)); // argument of the function changed
 
 // Additional functions
 void printNodeInfo(Info info);
+void displayDlist(DList *pdl);
 
 #endif

@@ -14,49 +14,46 @@ int DListEmpty(DList *pdl)
 	return pdl->head == NULL;
 }
 
-// return -1 if allocation failed
+// returns -1 if allocation failed
+// returns 0 when key is invalid
 // returns 1 if successful
-void insert(DList *pdl, int pos, doubleLinkedEntry e[])
+int insert(DList *pdl, Info info)
 {
 	Node *pn = (Node *)malloc(sizeof(Node));
-	pn->info.Key = pos;
-	Node *trav = pdl->head;
-	if (pdl->head == NULL)
+	if (!pn || info.Key < 1)
+		return 0;
+	pn->info = info;
+	if (!pdl->head)
 	{
-		pdl->head = pn;
-		pdl->tail = pn;
 		pn->next = NULL;
 		pn->prev = NULL;
-		pdl->size++;
-		return;
-	}
-	while (trav != NULL && trav->info.Key < pos)
-		trav = trav->next;
-	for (int i = 0; trav->info.entry[i] != '\0'; i++)
-		pn->info.entry[i] = e[i];
-	if (trav->prev == NULL)
-	{
-		trav->prev = pn;
-		pn->next = trav;
-		pn->prev = NULL;
 		pdl->head = pn;
-	}
-	if (trav->next == NULL && trav->info.Key < pn->info.Key)
-	{
-		trav->next = pn;
-		pn->prev = trav;
 		pdl->tail = pn;
-		pn->next = NULL;
 	}
 	else
 	{
-		trav->prev->next = pn;
-		pn->next = trav;
-		pn->prev = trav->prev;
-		trav->prev = pn;
+		Node *trav = pdl->head;
+		while (info.Key > trav->info.Key && trav->next)
+			trav = trav->next;
+		if (info.Key > trav->info.Key && !trav->next)
+		{
+			pn->next = NULL;
+			pn->prev = trav;
+			trav->next = pn;
+			pdl->tail = pn;
+		}
+		else
+		{
+			pn->next = trav;
+			pn->prev = trav->prev;
+			if (pn->prev)
+				trav->prev->next = pn;
+			else
+				pdl->head = pn;
+		}
 	}
-
 	pdl->size++;
+	return 1;
 }
 
 // returns -1 if list is empty
@@ -66,7 +63,7 @@ int deleteFromDList(DList *pdl, int pos, doubleLinkedEntry pe[])
 {
 	if (pdl->head == NULL)
 		return -1;
-	if (pos < 0 || pos > pdl->tail->info.Key)
+	if (pos < 0 || pos > pdl->tail->info.Key || pos < pdl->head->info.Key)
 		return 0;
 	Node *trav = pdl->head;
 	for (int i = 0; pe[i] != '\0'; i++)
@@ -74,12 +71,12 @@ int deleteFromDList(DList *pdl, int pos, doubleLinkedEntry pe[])
 	trav = pdl->head;
 	while (trav->info.Key < pos)
 		trav = trav->next;
-	if (trav->prev == NULL)
+	if (!trav->prev)
 	{
 		pdl->head = trav->next;
 		pdl->head->prev = NULL;
 	}
-	else if (trav->next == NULL)
+	else if (!trav->next)
 	{
 		pdl->tail = trav->prev;
 		pdl->tail->next = NULL;
@@ -98,7 +95,7 @@ int deleteFromDList(DList *pdl, int pos, doubleLinkedEntry pe[])
 // returns 1 if element is deleted successfully
 int deleteFirst(DList *pdl, doubleLinkedEntry pe[])
 {
-	if (pdl->head == NULL)
+	if (!pdl->head)
 		return -1;
 	Node *trav = pdl->head;
 	for (int i = 0; trav->info.entry[i] != '\0'; i++)
@@ -128,9 +125,14 @@ void traverse(DList *pdl, void (*pf)(Info))
 	}
 }
 
-// Additional functions
+// Additional functions:
 void printNodeInfo(Info info)
 {
 	printf("Key: %d\n", info.Key);
 	printf("Entry: %s\n", info.entry);
+}
+
+void displayDlist(DList *pdl)
+{
+	traverse(pdl, printNodeInfo);
 }
